@@ -123,8 +123,6 @@ def watch(path):
         subprocess.run(['git', 'add', '.'])
         subprocess.run(['git', 'commit', '-m', "auto: changes before starting watcher"])
 
-
-
     observer = Observer()
     event_handler = FileChangeHandler(path)
     observer.schedule(event_handler, path, recursive=True)
