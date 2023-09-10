@@ -55,7 +55,7 @@ class FileChangeHandler(FileSystemEventHandler):
     def relative_path(self, path: str):
         return path.lstrip(self.path)
 
-    def is_ignored(self, path: str):
+    def is_ignored(self, relative_path: str):
         ignored = self.ignore_spec.match_file(relative_path)
         if ignored:
             print(f"Ignoring changes in: {relative_path}")
@@ -97,7 +97,7 @@ class FileChangeHandler(FileSystemEventHandler):
         print(f"File {event.src_path} has been modified.")
         self.left_before_push = self.left_before_push - 1
         if not self.left_before_push:
-            self.left_before_push = 10
+            self.left_before_push = 5
             await self.git_push()
 
 
