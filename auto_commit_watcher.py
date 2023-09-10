@@ -19,7 +19,7 @@ class FileChangeHandler(FileSystemEventHandler):
         self.path = path
         self.gitignore_path = gitignore_path
         self.ignore_spec = self.read_ignore(gitignore_path)
-        self.left_before_push = 10 #TODO: improve it
+        self.left_before_push = 10  # TODO: improve it
 
     def read_ignore(self, gitignore_path=None):
         if gitignore_path is None:
