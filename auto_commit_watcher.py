@@ -34,7 +34,7 @@ class FileChangeHandler(FileSystemEventHandler):
         proc = await asyncio.create_subprocess_shell(
             self.push_command,
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE, cwd=path
+            stderr=asyncio.subprocess.PIPE, cwd=self.path
         )
 
         stdout, stderr = await proc.communicate()
@@ -67,7 +67,7 @@ class FileChangeHandler(FileSystemEventHandler):
         proc = await asyncio.create_subprocess_shell(
             f'git add . && git commit -m "auto: changes in {path}"',
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE, cwd=path
+            stderr=asyncio.subprocess.PIPE, cwd=self.path
         )
 
         stdout, stderr = await proc.communicate()
@@ -85,7 +85,7 @@ class FileChangeHandler(FileSystemEventHandler):
             return
         await self.git_commit(event.src_path)
         print(f"File {event.src_path} has been modified.")
-        self.left_before_push= self.left_before_push -1
+        self.left_before_push = self.left_before_push - 1
         if not self.left_before_push:
             self.left_before_push = 10
             await self.git_push()
