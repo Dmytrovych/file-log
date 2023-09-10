@@ -19,6 +19,7 @@ class FileChangeHandler(FileSystemEventHandler):
         self.path = path
         self.gitignore_path = gitignore_path
         self.ignore_spec = self.read_ignore(gitignore_path)
+        self.left_before_push = 10
 
     def read_ignore(self, gitignore_path=None):
         if gitignore_path is None:
@@ -41,6 +42,8 @@ class FileChangeHandler(FileSystemEventHandler):
             print(stdout.decode())
         if stderr:
             print(f"Git push error: {stderr.decode()}")
+        else:
+            print("Git pushed")
 
     def is_ignored(self, path: str):
         local_path = path.lstrip(self.path)
@@ -82,6 +85,10 @@ class FileChangeHandler(FileSystemEventHandler):
             return
         await self.git_commit(event.src_path)
         print(f"File {event.src_path} has been modified.")
+        self.left_before_push= self.left_before_push -1
+        if not self.left_before_push:
+            self.left_before_push = 10
+            await self.git_push()
 
 
 @click.group()
@@ -128,10 +135,6 @@ def watch(path):
     observer.schedule(event_handler, path, recursive=True)
     observer.start()
     click.echo(f"Watching for changes in {path}...")
-
-    # Push changes at regular intervals (e.g., every 10 minutes)
-    push_interval = 600  # in seconds
-    loop.create_task(FileChangeHandler(path).git_push(push_interval))
 
     try:
         while True:
