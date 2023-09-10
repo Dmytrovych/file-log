@@ -12,7 +12,8 @@ from watchdog.observers import Observer
 
 
 class FileChangeHandler(FileSystemEventHandler):
-    def __init__(self, path: str, gitignore_path=".gitignore"):
+    def __init__(self, path: str, gitignore_path=".gitignore", push_command='git push origin main'):
+        self.push_command = push_command
         self.loop = asyncio.get_event_loop()
         self.commit_scheduled = False
         self.path = path
@@ -24,6 +25,22 @@ class FileChangeHandler(FileSystemEventHandler):
             gitignore_path = self.gitignore_path
         with open(gitignore_path, 'r') as f:
             return pathspec.PathSpec.from_lines('gitwildmatch', f)
+
+    async def git_push(self):
+        """
+        Push changes to the remote repository.
+        """
+        proc = await asyncio.create_subprocess_shell(
+            self.push_command,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+
+        stdout, stderr = await proc.communicate()
+        if stdout:
+            print(stdout.decode())
+        if stderr:
+            print(f"Git push error: {stderr.decode()}")
 
     def is_ignored(self, path: str):
         local_path = path.lstrip(self.path)
