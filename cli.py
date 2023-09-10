@@ -35,7 +35,7 @@ class FileChangeHandler(FileSystemEventHandler):
         return ignored
 
     def on_modified(self, event):
-        self.loop.run_until_complete(self._on_modified(event.src_path))
+        self.loop.run_until_complete(self._on_modified(event))
 
     async def git_commit(self, path):
         if self.commit_scheduled:
@@ -104,7 +104,7 @@ def watch(path):
     click.echo(f"Watching for changes in {path}...")
     try:
         while True:
-            asyncio.sleep(5)
+            sleep(10)
             pass
     except KeyboardInterrupt:
         observer.stop()
