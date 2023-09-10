@@ -1,12 +1,13 @@
+import os
 import os.path
+import subprocess
+from pathlib import Path
 from time import sleep
 
 import click
-import subprocess
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-
 import pathspec
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 
 class FileChangeHandler(FileSystemEventHandler):
@@ -45,14 +46,17 @@ def cli():
     pass
 
 
+def to_absolute_path(path_str):
+    return Path(os.path.expanduser(path_str)).resolve()
+
+
 @cli.command()
 @click.argument('path', default='.')
 def init(path):
     """
     Initialize a new git repository.
     """
-    if path == '.':
-        path = os.path.abspath(path)
+    path = to_absolute_path(path).as_posix()
     result = subprocess.run(['git', 'init', path])
     if result.returncode == 0:
         click.echo("Successfully initialized git repository.")
@@ -66,8 +70,7 @@ def watch(path):
     """
     Watch for file changes and commit them.
     """
-    if path == '.':
-        path = os.path.abspath(path)
+    path = to_absolute_path(path).as_posix()
     observer = Observer()
     event_handler = FileChangeHandler(path)
     observer.schedule(event_handler, path, recursive=True)
