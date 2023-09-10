@@ -113,6 +113,9 @@ def watch(path):
     """
     Watch for file changes and commit them.
     """
+
+    loop = asyncio.get_event_loop()
+    
     path = to_absolute_path(path).as_posix()
     observer = Observer()
     event_handler = FileChangeHandler(path)
