@@ -1,4 +1,4 @@
-#!/usr/bin/env
+#!/usr/bin/env /usr/local/bin/python
 import asyncio
 import os
 import os.path
