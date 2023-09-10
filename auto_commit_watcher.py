@@ -54,6 +54,7 @@ class FileChangeHandler(FileSystemEventHandler):
 
     def relative_path(self, path: str):
         return path.lstrip(self.path)
+
     def is_ignored(self, path: str):
         relative_path = self.relative_path(path)
         ignored = self.ignore_spec.match_file(relative_path)
@@ -72,9 +73,10 @@ class FileChangeHandler(FileSystemEventHandler):
 
         self.commit_scheduled = True
         await asyncio.sleep(2)
+        relative_path = self.relative_path(path)
 
         proc = await asyncio.create_subprocess_shell(
-            f'git add . && git commit -m "auto: changes in {path}"',
+            f'git add . && git commit -m "auto: changes in {relative_path}"',
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE, cwd=self.path
         )
