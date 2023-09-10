@@ -42,7 +42,7 @@ class FileChangeHandler(FileSystemEventHandler):
             return
 
         self.commit_scheduled = True
-        await asyncio.sleep(10)
+        await asyncio.sleep(2)
 
         proc = await asyncio.create_subprocess_shell(
             f'git add . && git commit -m "auto: changes in {path}"',
