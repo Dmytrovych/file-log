@@ -32,10 +32,10 @@ class FileChangeHandler(FileSystemEventHandler):
         return ignored
 
     def on_modified(self, event):
-        if event.is_directory or self.is_ignored(event.src_path):
-            return
         if event.src_path == os.path.join(self.path, '.gitignore'):
             self.ignore_spec = self.read_ignore()
+        if event.is_directory or self.is_ignored(event.src_path):
+            return
         subprocess.run(['git', 'add', event.src_path])
         subprocess.run(['git', 'commit', '-m', f"auto: changes in {event.src_path}"])
         print(f"File {event.src_path} has been modified.")
