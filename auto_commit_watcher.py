@@ -33,7 +33,7 @@ class FileChangeHandler(FileSystemEventHandler):
         proc = await asyncio.create_subprocess_shell(
             self.push_command,
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
+            stderr=asyncio.subprocess.PIPE, cwd=path
         )
 
         stdout, stderr = await proc.communicate()
@@ -64,7 +64,7 @@ class FileChangeHandler(FileSystemEventHandler):
         proc = await asyncio.create_subprocess_shell(
             f'git add . && git commit -m "auto: changes in {path}"',
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
+            stderr=asyncio.subprocess.PIPE, cwd=path
         )
 
         stdout, stderr = await proc.communicate()
@@ -100,7 +100,7 @@ def init(path):
     Initialize a new git repository.
     """
     path = to_absolute_path(path).as_posix()
-    result = subprocess.run(['git', 'init', path])
+    result = subprocess.run(['git', 'init', path], cwd=path)
     if result.returncode == 0:
         click.echo("Successfully initialized git repository.")
     else:
@@ -118,10 +118,10 @@ def watch(path):
     path = to_absolute_path(path).as_posix()
 
     # Commit any changes at the start
-    status_result = subprocess.run(['git', 'status', '--porcelain'], stdout=subprocess.PIPE)
+    status_result = subprocess.run(['git', 'status', '--porcelain'], stdout=subprocess.PIPE, cwd=path)
     if status_result.stdout:
-        subprocess.run(['git', 'add', '.'])
-        subprocess.run(['git', 'commit', '-m', "auto: changes before starting watcher"])
+        subprocess.run(['git', 'add', '.'], cwd=path)
+        subprocess.run(['git', 'commit', '-m', "auto: changes before starting watcher"], cwd=path)
 
     observer = Observer()
     event_handler = FileChangeHandler(path)
