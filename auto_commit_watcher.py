@@ -147,3 +147,6 @@ def watch(path):
 
 if __name__ == "__main__":
     cli()
+
+# TODO: add commits optimizations
+# TODO: add search by content and date
