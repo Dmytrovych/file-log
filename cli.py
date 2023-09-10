@@ -66,7 +66,8 @@ def watch(path):
     """
     Watch for file changes and commit them.
     """
-    path = os.path.abspath(path)
+    if path == '.':
+        path = os.path.abspath(path)
     observer = Observer()
     event_handler = FileChangeHandler(path)
     observer.schedule(event_handler, path, recursive=True)
