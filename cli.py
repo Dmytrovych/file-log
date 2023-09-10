@@ -1,3 +1,4 @@
+import asyncio
 import os
 import os.path
 import subprocess
@@ -12,6 +13,8 @@ from watchdog.observers import Observer
 
 class FileChangeHandler(FileSystemEventHandler):
     def __init__(self, path: str, gitignore_path=".gitignore"):
+        self.loop = asyncio.get_event_loop()
+        self.commit_scheduled = False
         self.path = path
         self.gitignore_path = gitignore_path
         self.ignore_spec = self.read_ignore(gitignore_path)
@@ -32,12 +35,35 @@ class FileChangeHandler(FileSystemEventHandler):
         return ignored
 
     def on_modified(self, event):
+        self.loop.run_until_complete(self._on_modified(event.src_path))
+
+    async def git_commit(self, path):
+        if self.commit_scheduled:
+            return
+
+        self.commit_scheduled = True
+        await asyncio.sleep(10)
+
+        proc = await asyncio.create_subprocess_shell(
+            f'git add . && git commit -m "auto: changes in {path}"',
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+
+        stdout, stderr = await proc.communicate()
+        if stdout:
+            print(stdout.decode())
+        if stderr:
+            print(f"Git error: {stderr.decode()}")
+
+        self.commit_scheduled = False
+
+    async def _on_modified(self, event):
         if event.src_path == os.path.join(self.path, '.gitignore'):
             self.ignore_spec = self.read_ignore()
         if event.is_directory or self.is_ignored(event.src_path):
             return
-        subprocess.run(['git', 'add', event.src_path])
-        subprocess.run(['git', 'commit', '-m', f"auto: changes in {event.src_path}"])
+        await self.git_commit(event.src_path)
         print(f"File {event.src_path} has been modified.")
 
 
@@ -78,7 +104,7 @@ def watch(path):
     click.echo(f"Watching for changes in {path}...")
     try:
         while True:
-            sleep(4)
+            asyncio.sleep(5)
             pass
     except KeyboardInterrupt:
         observer.stop()
