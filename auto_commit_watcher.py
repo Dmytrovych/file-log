@@ -26,8 +26,9 @@ class FileChangeHandler(FileSystemEventHandler):
     def read_ignore(self, gitignore_path=None):
         if gitignore_path is None:
             gitignore_path = self.gitignore_path
-        with open(gitignore_path, 'r') as f:
-            spec = pathspec.PathSpec.from_lines('gitwildmatch', f) + pathspec.PathSpec([GitWildMatchPattern('*~'), GitWildMatchPattern('.git/')])
+        with (open(gitignore_path, 'r') as f):
+            spec = pathspec.PathSpec.from_lines('gitwildmatch', f)
+            + pathspec.PathSpec([GitWildMatchPattern('*~'), GitWildMatchPattern('.git/')])
             return spec
 
     async def git_push(self):
@@ -157,4 +158,3 @@ if __name__ == "__main__":
 # TODO: add canonical logging
 # TODO: create shell tool
 # TODO: lock for exclusive watch
-
