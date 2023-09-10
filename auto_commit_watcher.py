@@ -60,6 +60,7 @@ class FileChangeHandler(FileSystemEventHandler):
     async def git_commit(self, path):
         if self.commit_scheduled:
             return
+
         self.commit_scheduled = True
         await asyncio.sleep(2)
 
