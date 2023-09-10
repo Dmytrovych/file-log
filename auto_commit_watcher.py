@@ -115,7 +115,14 @@ def watch(path):
     """
 
     loop = asyncio.get_event_loop()
-    
+
+    # Commit any changes at the start
+    status_result = subprocess.run(['git', 'status', '--porcelain'], stdout=subprocess.PIPE)
+    if status_result.stdout:
+        subprocess.run(['git', 'add', '.'])
+        subprocess.run(['git', 'commit', '-m', "auto: changes before starting watcher"])
+
+
     path = to_absolute_path(path).as_posix()
     observer = Observer()
     event_handler = FileChangeHandler(path)
