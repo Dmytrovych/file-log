@@ -154,3 +154,4 @@ if __name__ == "__main__":
 # TODO: add visualization
 # TODO: add canonical logging
 # TODO: create shell tool
+# TODO: lock for exclusive watch
