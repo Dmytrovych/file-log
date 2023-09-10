@@ -27,8 +27,7 @@ class FileChangeHandler(FileSystemEventHandler):
         if gitignore_path is None:
             gitignore_path = self.gitignore_path
         with open(gitignore_path, 'r') as f:
-            spec = pathspec.PathSpec.from_lines('gitwildmatch', f)
-            pathspec.PathSpec([GitWildMatchPattern('*~'), GitWildMatchPattern('.git/')])
+            spec = pathspec.PathSpec.from_lines('gitwildmatch', f) + pathspec.PathSpec([GitWildMatchPattern('*~'), GitWildMatchPattern('.git/')])
             return spec
 
     async def git_push(self):
