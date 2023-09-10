@@ -10,7 +10,7 @@ import pathspec
 
 
 class FileChangeHandler(FileSystemEventHandler):
-    def __init__(self, path:str, gitignore_path=".gitignore"):
+    def __init__(self, path: str, gitignore_path=".gitignore"):
         self.path = path
         self.gitignore_path = gitignore_path
         self.ignore_spec = self.read_ignore(gitignore_path)
@@ -51,7 +51,8 @@ def init(path):
     """
     Initialize a new git repository.
     """
-    path = os.path.abspath(path)
+    if path == '.':
+        path = os.path.abspath(path)
     result = subprocess.run(['git', 'init', path])
     if result.returncode == 0:
         click.echo("Successfully initialized git repository.")
