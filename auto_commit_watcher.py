@@ -56,7 +56,6 @@ class FileChangeHandler(FileSystemEventHandler):
         return path.lstrip(self.path)
 
     def is_ignored(self, path: str):
-        relative_path = self.relative_path(path)
         ignored = self.ignore_spec.match_file(relative_path)
         if ignored:
             print(f"Ignoring changes in: {relative_path}")
@@ -67,13 +66,12 @@ class FileChangeHandler(FileSystemEventHandler):
     def on_modified(self, event):
         self.loop.run_until_complete(self._on_modified(event))
 
-    async def git_commit(self, path):
+    async def git_commit(self, relative_path):
         if self.commit_scheduled:
             return
 
         self.commit_scheduled = True
         await asyncio.sleep(2)
-        relative_path = self.relative_path(path)
 
         proc = await asyncio.create_subprocess_shell(
             f'git add . && git commit -m "auto: changes in {relative_path}"',
@@ -92,7 +90,8 @@ class FileChangeHandler(FileSystemEventHandler):
     async def _on_modified(self, event):
         if event.src_path == os.path.join(self.path, '.gitignore'):
             self.ignore_spec = self.read_ignore()
-        if event.is_directory or self.is_ignored(event.src_path):
+        relative_path = self.relative_path(event.src_path)
+        if event.is_directory or self.is_ignored(relative_path):
             return
         await self.git_commit(event.src_path)
         print(f"File {event.src_path} has been modified.")
