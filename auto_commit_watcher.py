@@ -150,3 +150,5 @@ if __name__ == "__main__":
 
 # TODO: add commits optimizations
 # TODO: add search by content and date
+# TODO: add visualization
+# TODO: add canonical logging
