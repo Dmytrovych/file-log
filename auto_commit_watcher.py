@@ -119,6 +119,11 @@ def watch(path):
     observer.schedule(event_handler, path, recursive=True)
     observer.start()
     click.echo(f"Watching for changes in {path}...")
+
+    # Push changes at regular intervals (e.g., every 10 minutes)
+    push_interval = 600  # in seconds
+    loop.create_task(FileChangeHandler(path).git_push_every(push_interval))
+
     try:
         while True:
             sleep(2)
