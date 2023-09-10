@@ -18,15 +18,16 @@ class FileChangeHandler(FileSystemEventHandler):
         self.loop = asyncio.get_event_loop()
         self.commit_scheduled = False
         self.path = path
-        self.gitignore_path = gitignore_path
-        self.ignore_spec = self.read_ignore(gitignore_path)
+        self.gitignore_path = os.path.join(self.path, gitignore_path)
+        self.ignore_spec = self.read_ignore()
         self.left_before_push = 10  # TODO: improve it
 
     def read_ignore(self, gitignore_path=None):
         if gitignore_path is None:
             gitignore_path = self.gitignore_path
         with open(gitignore_path, 'r') as f:
-            return pathspec.PathSpec.from_lines('gitwildmatch', f)
+            spec = pathspec.PathSpec.from_lines('gitwildmatch', f)
+            return spec
 
     async def git_push(self):
         """
