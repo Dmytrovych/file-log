@@ -131,7 +131,7 @@ def watch(path):
 
     # Push changes at regular intervals (e.g., every 10 minutes)
     push_interval = 600  # in seconds
-    loop.create_task(FileChangeHandler(path).git_push_every(push_interval))
+    loop.create_task(FileChangeHandler(path).git_push(push_interval))
 
     try:
         while True:
