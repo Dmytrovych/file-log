@@ -1,4 +1,4 @@
-#!/usr/
+#!/usr/bin/env
 import asyncio
 import os
 import os.path
