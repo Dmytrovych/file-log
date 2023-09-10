@@ -52,13 +52,15 @@ class FileChangeHandler(FileSystemEventHandler):
         else:
             print("Git pushed")
 
+    def relative_path(self, path: str):
+        return path.lstrip(self.path)
     def is_ignored(self, path: str):
-        local_path = path.lstrip(self.path)
-        ignored = self.ignore_spec.match_file(local_path)
+        relative_path = self.relative_path(path)
+        ignored = self.ignore_spec.match_file(relative_path)
         if ignored:
-            print(f"Ignoring changes in: {local_path}")
+            print(f"Ignoring changes in: {relative_path}")
         else:
-            print(f"Track changes in: {local_path}")
+            print(f"Track changes in: {relative_path}")
         return ignored
 
     def on_modified(self, event):
