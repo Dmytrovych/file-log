@@ -104,7 +104,7 @@ def watch(path):
     click.echo(f"Watching for changes in {path}...")
     try:
         while True:
-            sleep(10)
+            sleep(2)
             pass
     except KeyboardInterrupt:
         observer.stop()
