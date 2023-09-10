@@ -12,7 +12,7 @@ from watchdog.observers import Observer
 
 
 class FileChangeHandler(FileSystemEventHandler):
-    def __init__(self, path: str, gitignore_path=".gitignore", push_command='git push origin main'):
+    def __init__(self, path: str, gitignore_path=".gitignore", push_command='git push origin'):
         self.push_command = push_command
         self.loop = asyncio.get_event_loop()
         self.commit_scheduled = False
